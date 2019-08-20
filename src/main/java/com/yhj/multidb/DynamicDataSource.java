@@ -2,6 +2,7 @@ package com.yhj.multidb;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,11 +53,11 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         }
 
         DynamicDataSource builder() {
+            Assert.isTrue(!dbProperties.isEmpty(), "【数据源配置】 读取不到数据源信息, dbProperties 不能为空");
+
             DynamicDataSource dynamicDataSource = new DynamicDataSource();
             Map<Object, Object> dynamicDataSourceMap;
-            if (dbProperties.isEmpty()) {
-                throw new IllegalStateException("【数据源配置】 读取不到数据源信息, dbProperties 不能为空");
-            }
+
             dynamicDataSourceMap = new HashMap<>();
             for (DbProperty dbProperty : dbProperties) {
                 dynamicDataSource.setDefaultTargetDataSource(dbProperty);
