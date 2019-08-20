@@ -1,0 +1,17 @@
+spring:
+  multi-datasource:
+    db-properties[0]:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/sell?useUnicode=true&characterEncoding=utf8&useSSL=true&allowMultiQueries=true&serverTimezone=UTC
+      username: root
+      password: 123456
+      bean-name: default
+
+    db-properties[1]:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/mini?useUnicode=true&characterEncoding=utf8&useSSL=true&allowMultiQueries=true&serverTimezone=UTC
+      username: root
+      password: 123456
+      bean-name: mini
