@@ -19,7 +19,6 @@ import javax.sql.DataSource;
 @Getter
 @Setter
 class DbProperty {
-    private String type;
 
     private String driverClassName;
 

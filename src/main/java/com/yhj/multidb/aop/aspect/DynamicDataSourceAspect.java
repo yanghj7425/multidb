@@ -10,8 +10,11 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author ：yhj
@@ -25,9 +28,11 @@ import java.lang.reflect.Method;
 @Component
 public class DynamicDataSourceAspect {
 
+    private static Map<MethodSignature, String> cacheAspect = new HashMap<>();
+
+
     @Pointcut("@annotation(com.yhj.multidb.aop.annotation.DynamicRoutingDataSource)")
     public void pointCut() {
-
     }
 
     /**
@@ -41,13 +46,21 @@ public class DynamicDataSourceAspect {
     public void before(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        String dataSourceName = cacheAspect.get(signature);
+
+        if (!StringUtils.isEmpty(dataSourceName)) {
+            DynamicDataSource.setDataSourceKey(dataSourceName);
+            return;
+        }
+
         Class clazz = signature.getDeclaringType();
         Class[] parameterTypes = signature.getParameterTypes();
         try {
             Method method = clazz.getMethod(methodName, parameterTypes);
             if (method != null && method.isAnnotationPresent(DynamicRoutingDataSource.class)) {
                 DynamicRoutingDataSource dataSource = method.getAnnotation(DynamicRoutingDataSource.class);
-                DynamicDataSource.setDataSourceKey(dataSource.name());
+                dataSourceName = dataSource.name();
+                cacheAspect.put(signature, dataSourceName);
             }
         } catch (NoSuchMethodException e) {
             log.error(e.getMessage(), e.getCause());
